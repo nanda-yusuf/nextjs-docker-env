@@ -1,0 +1,11 @@
+version: '3'
+services:
+  nextjs-docker-runtime:
+    image: nextjs-docker-runtime
+    container_name: nextjs-docker-runtime
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_NAME=NextJS App 1
+      - NEXT_PUBLIC_DESCRIPTION=Test Docker with Runtime ENV
+
