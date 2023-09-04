@@ -5,14 +5,8 @@ FROM base AS deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
-
+COPY package.json  ./
+RUN npm i --legacy-peer-deps
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -29,7 +23,7 @@ RUN echo -e 'NEXT_PUBLIC_NAME=NEXT_PUBLIC_NAME\n\
 NEXT_PUBLIC_DESCRIPTION=NEXT_PUBLIC_DESCRIPTION'\
 >> .env.local
 
-RUN yarn build
+RUN npm run build
 
 # If using npm comment out above and use below instead
 # RUN npm run build
