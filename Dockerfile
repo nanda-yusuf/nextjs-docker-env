@@ -19,9 +19,7 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN echo -e 'NEXT_PUBLIC_NAME=NEXT_PUBLIC_NAME\n\
-NEXT_PUBLIC_DESCRIPTION=NEXT_PUBLIC_DESCRIPTION'\
->> .env.local
+RUN mv .env.local.example .env.local
 
 RUN npm run build
 
@@ -47,6 +45,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/.env.local ./.env.local
 COPY --from=builder --chown=nextjs:nodejs /app/entrypoint.sh ./entrypoint.sh
+
+# Fix permission denied on openshift
+RUN chgrp -R 0 ./.next && chmod -R g=u ./.next
 
 RUN ["chmod", "+x", "./entrypoint.sh"]
 ENTRYPOINT ["./entrypoint.sh"]
